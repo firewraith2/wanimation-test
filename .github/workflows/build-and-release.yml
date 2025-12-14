@@ -38,7 +38,7 @@ jobs:
           files: dist/object_studio_windows.zip
 
   mac-intel-build:
-    runs-on: macos-13
+    runs-on: macos-15-intel
 
     steps:
       - name: Checkout repository
@@ -68,7 +68,7 @@ jobs:
           files: object_studio_mac_intel.dmg
 
   mac-arm64-build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout repository
