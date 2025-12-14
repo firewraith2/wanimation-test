@@ -1251,6 +1251,9 @@ def give_object_overview(
 
 
 def generate_object_main(data):
+
+    print("[START] Starting Object Generation...")
+
     (
         input_folder,
         images_dict,
@@ -1363,6 +1366,8 @@ def generate_object_main(data):
             input_folder,
         )
 
+    print(f"\n[OK] Object Generated Successfully")
+
 
 def og_process_single_folder(
     folder_path,
@@ -1381,8 +1386,10 @@ def og_process_single_folder(
         print(f"[ERROR] Path is not a directory: {folder_path}")
         return False
 
+    print("=" * 60)
     print(f"[INFO] Processing folder: {folder_path}")
     print("=" * 60)
+    print()
 
     # Validate folder
     (
@@ -1401,6 +1408,8 @@ def og_process_single_folder(
     ):
         print(f"[ERROR] Validation failed for folder: {folder_path}")
         return False
+
+    print("[OK] Validation Successful.\n")
 
     # Determine animation_group: use provided, then check config.json, then default
     current_animation_group = animation_group
@@ -1454,7 +1463,6 @@ def og_process_single_folder(
         )
 
         generate_object_main(data)
-        print(f"[OK] Successfully processed: {folder_path}")
         return True
 
     except Exception as e:
@@ -1488,17 +1496,20 @@ def og_process_multiple_folder(
         print(f"[ERROR] No subfolders found in: {parent_folder}")
         return
 
-    print(f"[INFO] Found {len(subfolders)} folder(s) to process\n")
     print("=" * 60)
+    print(f"[INFO] Found {len(subfolders)} folder(s) to process")
+    print("=" * 60)
+    print()
 
     success_count = 0
     failed_folders = []
 
-    for idx, subfolder_name in enumerate(subfolders, 1):
-        subfolder_path = os.path.join(parent_folder, subfolder_name)
+    for idx, subfolder_name in enumerate(subfolders):
 
-        print(f"\n[{idx}/{len(subfolders)}] Processing: {subfolder_name}")
-        print("=" * 60)
+        if idx > 0:
+            print()
+
+        subfolder_path = os.path.join(parent_folder, subfolder_name)
 
         success = og_process_single_folder(
             folder_path=subfolder_path,
@@ -1514,12 +1525,13 @@ def og_process_multiple_folder(
         else:
             failed_folders.append(subfolder_name)
 
-    print("\n" + "=" * 60)
+    print()
+    print("=" * 60)
     print("[SUMMARY] PROCESSING SUMMARY")
     print("=" * 60)
     print(f"[INFO] Total: {len(subfolders)}")
-    print(f"[OK] Successful: {success_count}")
-    print(f"[ERROR] Failed: {len(failed_folders)}")
+    print(f"[INFO] Successful: {success_count}")
+    print(f"[INFO] Failed: {len(failed_folders)}")
 
     if failed_folders:
         print("\n[ERROR] Failed folders:")

@@ -548,6 +548,9 @@ def create_json_from_animation_xml(animations_xml_root, output_folder):
 
 
 def generate_frames_main(data):
+
+    print("[START] Starting Frames Generation...")
+
     (
         normal_mode,
         special_cases_info,
@@ -588,6 +591,8 @@ def generate_frames_main(data):
     # Generate animation.json
     create_json_from_animation_xml(animations_xml_root, output_folder)
 
+    print(f"\n[OK] Frames Generated Successfully")
+
 
 def fg_process_single_folder(folder_path, avoid_overlap="none"):
     if not os.path.exists(folder_path):
@@ -598,9 +603,10 @@ def fg_process_single_folder(folder_path, avoid_overlap="none"):
         print(f"[ERROR] Path is not a directory: {folder_path}")
         return False
 
-    print("-" * 60)
+    print("=" * 60)
     print(f"[INFO] Processing folder: {folder_path}")
-    print("-" * 60 + "\n")
+    print("=" * 60)
+    print()
 
     # Validate folder
     (
@@ -621,6 +627,8 @@ def fg_process_single_folder(folder_path, avoid_overlap="none"):
         print(f"[ERROR] Validation failed for folder: {folder_path}")
         return False
 
+    print("[OK] Validation Successful.\n")
+
     try:
         data = (
             normal_mode,
@@ -634,7 +642,6 @@ def fg_process_single_folder(folder_path, avoid_overlap="none"):
         )
 
         generate_frames_main(data)
-        print(f"\n[OK] Successfully processed: {folder_path}\n")
         return True
 
     except Exception as e:
@@ -661,12 +668,19 @@ def fg_process_multiple_folder(parent_folder, avoid_overlap="none"):
         print(f"[ERROR] No subfolders found in: {parent_folder}")
         return
 
-    print(f"[INFO] Found {len(subfolders)} folder(s) to process\n")
+    print("=" * 60)
+    print(f"[INFO] Found {len(subfolders)} folder(s) to process")
+    print("=" * 60)
+    print()
 
     success_count = 0
     failed_folders = []
 
-    for idx, subfolder_name in enumerate(subfolders, 1):
+    for idx, subfolder_name in enumerate(subfolders):
+
+        if idx > 0:
+            print()
+
         subfolder_path = os.path.join(parent_folder, subfolder_name)
 
         success = fg_process_single_folder(
@@ -679,6 +693,7 @@ def fg_process_multiple_folder(parent_folder, avoid_overlap="none"):
         else:
             failed_folders.append(subfolder_name)
 
+    print()
     print("=" * 60)
     print("[SUMMARY] PROCESSING SUMMARY")
     print("=" * 60)

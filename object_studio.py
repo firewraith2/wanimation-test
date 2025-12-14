@@ -1791,8 +1791,6 @@ class ObjectStudioGUI:
             inter_scan = self.interscan_var.get()
             input_folder = self.input_folder.get()
 
-            print("[START] Starting Object Generation...")
-
             data_needed_for_processing = (
                 input_folder,
                 self.og_images_dict,
@@ -1810,8 +1808,6 @@ class ObjectStudioGUI:
             )
 
             generate_object_main(data_needed_for_processing)
-
-            print(f"\n[OK] Object Generated Successfully")
 
         except Exception as e:
             print(f"\n[ERROR] Error during generation:\n{str(e)}")
@@ -1896,8 +1892,6 @@ class ObjectStudioGUI:
             input_folder = self.recon_folder.get()
             avoid_overlap = self.avoid_overlap.get()
 
-            print("[START] Starting Frames Generation...")
-
             data_needed_for_processing = (
                 self.fg_normal_mode,
                 self.fg_special_cases_info,
@@ -1910,8 +1904,6 @@ class ObjectStudioGUI:
             )
 
             generate_frames_main(data_needed_for_processing)
-
-            print(f"\n[OK] Frames Generated Successfully")
 
         except Exception as e:
             print(f"\n[ERROR] Error during generation:\n{str(e)}")
