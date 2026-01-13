@@ -92,12 +92,8 @@ def wan_transform_process_multiple(parent_folder: Path, generate: bool = True) -
         return
 
     if generate:
-        # Find all subfolders (exclude common output folders)
-        items = [
-            f
-            for f in parent_folder.iterdir()
-            if f.is_dir() and not f.name.endswith(("_extracted", "_sprite", "_frames"))
-        ]
+        # Find all subfolders
+        items = [f for f in parent_folder.iterdir() if f.is_dir()]
         operation = "Generate WAN"
     else:
         # Find all WAN files

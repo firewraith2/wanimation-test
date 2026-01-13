@@ -13,8 +13,11 @@ Sprite Modes Tested:
   - 8bpp+tiles: 8bpp with tiles mode enabled
 
 Usage:
-    # Run all tests (both external files and WAN based with all modes)
+    # Run all tests using default folder (tests/demo-frames)
     python tests/test_generators.py
+
+    # Run tests using a custom folder
+    python tests/test_generators.py tests/demo-frames
 
     # Run only external files based test (all 4 modes)
     python tests/test_generators.py --test-files
@@ -32,7 +35,7 @@ Usage:
     python tests/test_generators.py --keep-output
 
 Test Data:
-    The test uses demo frames from tests/demo-frames/ directory.
+    The test uses demo frames from tests/demo-frames/ directory (default).
     Each subfolder represents a separate test case with PNG images and config.json.
 
 Exit Codes:
@@ -50,36 +53,14 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from generators import sg_process_multiple_folder, fg_process_multiple_folder
-from data import read_file_to_bytes, read_json_file, SEPARATOR_LINE_LENGTH
-
-STEP_SEPARATOR = "-" * SEPARATOR_LINE_LENGTH
-SECTION_SEPARATOR = "=" * SEPARATOR_LINE_LENGTH
-
-
-def print_step_header(step_num, title):
-    print(STEP_SEPARATOR)
-    print(f"[STEP {step_num}] {title}...")
-    print(STEP_SEPARATOR)
-    print()
-
-
-def safe_remove_folder(folder_path: Path, description=""):
-    if not folder_path.exists():
-        return False
-
-    try:
-        shutil.rmtree(folder_path)
-        if description:
-            print(f"[OK] Removed {description}")
-        return True
-    except Exception as e:
-        if description:
-            print(f"[WARNING] Failed to remove {description}: {e}")
-        return False
-
-
-def get_subfolders(base_dir: Path):
-    return sorted(entry.name for entry in base_dir.iterdir() if entry.is_dir())
+from data import read_file_to_bytes, read_json_file
+from tests.utils import (
+    STEP_SEPARATOR,
+    SECTION_SEPARATOR,
+    print_step_header,
+    safe_remove_folder,
+    get_subfolders,
+)
 
 
 def compare_images(img1_path: Path, img2_path: Path):
@@ -237,11 +218,17 @@ def get_custom_properties(mode_config):
     }
 
 
-def run_tests(keep_output=False, test_files=True, test_wan=True, modes_to_test=None):
+def run_tests(
+    keep_output=False,
+    test_files=True,
+    test_wan=True,
+    modes_to_test=None,
+    frames_dir=None,
+):
     if modes_to_test is None:
         modes_to_test = ALL_MODES
     test_dir = Path(__file__).parent
-    frames_files_dir = test_dir / "demo-frames"
+    frames_files_dir = frames_dir if frames_dir else test_dir / "demo-frames"
 
     if not frames_files_dir.exists():
         print(f"[ERROR] Test directory not found: {frames_files_dir}")
@@ -677,6 +664,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Test 8bpp+tiles mode (8bpp with tiles mode enabled).",
     )
+    parser.add_argument(
+        "folder",
+        nargs="?",
+        help="Optional folder path containing demo frames. If not specified, uses tests/demo-frames",
+    )
     args = parser.parse_args()
 
     # If neither --test-files nor --test-wan is specified, run both
@@ -700,10 +692,19 @@ if __name__ == "__main__":
     if not modes:
         modes = ALL_MODES
 
+    # Determine frames directory
+    frames_dir = None
+    if args.folder:
+        frames_dir = Path(args.folder).resolve()
+        if not frames_dir.exists():
+            print(f"Directory not found: {frames_dir}")
+            sys.exit(1)
+
     success = run_tests(
         keep_output=args.keep_output,
         test_files=run_files,
         test_wan=run_wan,
         modes_to_test=modes,
+        frames_dir=frames_dir,
     )
     sys.exit(0 if success else 1)
