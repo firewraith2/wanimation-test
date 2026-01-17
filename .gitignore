@@ -1,0 +1,10 @@
+__pycache__/
+dist/
+build/
+dev_files/
+*.spec
+*.nds
+examples/
+generated_sprites*/
+isolated_wan*/
+DEBUG/
